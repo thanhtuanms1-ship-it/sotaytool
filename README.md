@@ -190,13 +190,36 @@
             let db = JSON.parse(localStorage.getItem('M_D'))||[]; let i = db.findIndex(x=>x.t===t); if(i>=0) db[i].c=c; else db.push({t:t, c:c});
             localStorage.setItem('M_D', JSON.stringify(db)); alert("Đã lưu!"); document.getElementById('dTe').value=''; document.getElementById('dCw').value=''; tkD();
         }
-        function imp(i) {
-            const r = new FileReader(); r.onload = function() {
-                let db = JSON.parse(localStorage.getItem('M_D'))||[]; let lines = r.result.split('\n'); let cnt=0;
-                lines.forEach(l=>{ if(!l.trim()) return; let p=l.split(/[,;\t\s]+/); if(p.length>=2) { let t=p[0].trim().toUpperCase(); let c=parseFloat(p[p.length-1]); if(t&&!isNaN(c)) { let idx=db.findIndex(x=>x.t===t); if(idx>=0) db[idx].c=c; else db.push({t:t,c:c}); cnt++; } } });
-                localStorage.setItem('M_D', JSON.stringify(db)); alert("Đã nạp "+cnt); tkD();
-            }; if(i.files) r.readAsText(i.files);
+               function imp(i) {
+            const r = new FileReader(); 
+            r.onload = function() {
+                let db = JSON.parse(localStorage.getItem('M_D')) || []; 
+                let lines = r.result.split('\n'); 
+                let cnt = 0;
+                lines.forEach(l => { 
+                    let s = l.trim();
+                    if(!s) return; 
+                    // Tách dòng bằng dấu phẩy, chấm phẩy hoặc khoảng trắng
+                    let p = s.split(/[,;\t]+/); 
+                    if(p.length < 2) p = s.split(/\s+/); 
+                    
+                    if(p.length >= 2) { 
+                        let t = p[0].trim().toUpperCase(); 
+                        let c = parseFloat(p[p.length - 1].trim()); 
+                        if(t && !isNaN(c)) { 
+                            let idx = db.findIndex(x => x.t === t); 
+                            if(idx >= 0) db[idx].c = c; else db.push({t: t, c: c}); 
+                            cnt++; 
+                        } 
+                    } 
+                });
+                localStorage.setItem('M_D', JSON.stringify(db)); 
+                alert("Đã nạp thành công " + cnt + " dao!"); 
+                tkD();
+            }; 
+            if(i.files && i.files[0]) r.readAsText(i.files[0]);
         }
+
         function tkD() {
             const tn = document.getElementById('dTn').value.trim().toUpperCase(); const tc = parseFloat(document.getElementById('dTc').value);
             const db = JSON.parse(localStorage.getItem('M_D'))||[]; const kq = document.getElementById('dKq'); kq.innerHTML=''; if(!tn&&isNaN(tc)) return;
